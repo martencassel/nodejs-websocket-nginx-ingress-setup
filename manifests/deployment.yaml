@@ -1,0 +1,25 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nodejs-websocket
+  name: nodejs-websocket
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nodejs-websocket
+  template:
+    metadata:
+      labels:
+        app: nodejs-websocket
+    spec:
+      containers:
+      - image: nodejs-websocket:latest
+        imagePullPolicy: Never
+        name: nodejs-websocket
+        ports:
+        - name: websocket-port
+          containerPort: 8080

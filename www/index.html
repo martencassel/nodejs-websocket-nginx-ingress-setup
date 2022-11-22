@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>NodeJS WebSocket Server</title>
+</head>
+<body>
+	<h1>Hello world</h1>
+    <button id="btn" onclick="ws.close();" >Close connection</button>
+<script>
+  
+const ws = new WebSocket("ws://nodejs-websocket.localhost:30001/ws/");
+ws.addEventListener("open", () =>{  
+  console.log(ws.url, ws.binaryType, ws.bufferedAmount, ws.protocol, ws.readyState)
+  console.log("on ws.open");
+  console.log("ws.readyState: " + ws.readyState )
+    setInterval(() => {
+        console.log('ws.readyState: ', ws.readyState)
+        if(ws.readyState === 1){
+            ws.send("Hello from client");
+        }
+  }, 2000);
+  // Close
+}); 
+
+ws.addEventListener('upgrade', function upgrade(request, socket, head) {
+  console.log('on.ws.upgrade');
+  console.log('ws.readyState: ' + ws.readyState )
+})
+ws.addEventListener('message', function (event) {
+    console.log('on.ws.message Message from server ', event.data);
+    console.log(event.data);
+});
+
+ws.addEventListener("close", () =>{
+  console.log("ws.close: We are disconnected");
+});
+
+ws.addEventListener("error", () =>{
+  console.log("ws.error: Error");
+});
+</script>
+</body>
+</html>
