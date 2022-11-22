@@ -34,6 +34,8 @@ If you have all prereqs above you can run make to setup the environment
 make 
 ```
 
+But must importantly, first open the Makefile and check how it works...
+
 ## Notes
 
 The makefile will add a host entry into your /etc/hosts failure, which requires entering your password in the sudo prompt.
