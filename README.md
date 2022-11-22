@@ -38,12 +38,12 @@ But must importantly, first open the Makefile and check how it works...
 
 ## Notes
 
-The makefile will add a host entry into your /etc/hosts failure, which requires entering your password in the sudo prompt.
+The makefile will add a host entry into your /etc/hosts. It requires you to perform sudo, thus entering your password.
 
 TCP traffic from the host to the nginx ingress pod will be available by using the following NAT configurations
 
-    - From Host to the Kind Kubernetes Nodes (See ./scripts/kind-cluster-config.yaml)
-    - From Kind Kubernetes Node to the Ingress Service (See ./manifests/service.yaml)
+    - From Host to the Kind Kubernetes Nodes (Docker port-mapping in kind, See ./scripts/kind-cluster-config.yaml)
+    - From Kind Kubernetes Node to the Ingress Service (Kubernetes NodePort, See ./manifests/service.yaml)
 
 DNS resolution from the host to the pod is made available by the following configurations
 
@@ -52,11 +52,12 @@ DNS resolution from the host to the pod is made available by the following confi
 
 ## Common issues
 
-* Labels are incorrect between Deployment and Service and Ingress. This may lead to Endpoints not being populated.
+* If labels are incorrect between Deployment and Service and Ingress. This may lead to Endpoints not being populated.
 * Ingress path doesnt match the server path in the server.js
 * Port mappings are incorrect all the way from Host -> Kubernetes Node -> Ingress Service (NodePort) -> Nodejs service ports -> Container ports
 * HTTP error code 426, "Upgrade Required"
 When connection you may get this, this was resolved by annotating the ingress manifest with "nginx.org/websocket-services: "nodejs-websocket-service"
+* Your ingress notation may not match your Kubernetes version (networking.k8s.io/v1 vs extensions/v1beta1)
 
 ## References
 
