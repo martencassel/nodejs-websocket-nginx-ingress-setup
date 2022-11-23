@@ -4,13 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "run": "DEBUG=* nodemon server.js", 
+    "run": "DEBUG=* nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.20.1",
+    "express": "^4.18.2",
     "ws": "^8.11.0"
   }
 }

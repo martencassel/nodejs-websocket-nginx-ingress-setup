@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: k8s-event-watcher
+  name: k8s-event-watcher-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k8s-event-watcher
+  template:
+    metadata:
+      annotations:
+        dapr.io/app-id: "k8s-event-watcher"
+        dapr.io/app-port: "8081"
+        dapr.io/enabled: "true"
+      labels:
+        app: k8s-event-watcher
+    spec:
+      containers:
+      - env:
+        - name: PORT
+          value: "8081"
+        image: nodejs-websocket:latest
+        imagePullPolicy: Never
+        name: k8s-event-watcher
+        ports:
+        - containerPort: 8081
+          protocol: TCP 

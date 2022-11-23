@@ -1,0 +1,13 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+    name: kubeevents
+    namespace: default
+spec:
+    type: bindings.kubernetes
+    version: v1
+    metadata:
+    - name: namespace
+      value: default
+    - name: resyncPeriodInSec
+      value: "5"

@@ -1,14 +1,70 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta charset="utf-8">
-	<title>NodeJS WebSocket Server</title>
+	<title>k8s-event-dapr-demo</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+  <style type="text/css">
+    * {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+    }
+
+    body {
+      width: 100%;
+      background-color: #f3f3f5;
+    }
+
+    #messages {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      background-color: #fff;
+      padding: 15px;
+      border: 1px solid #eaeaea;
+      /* Rounder corners */
+      border-radius: 5px;
+
+      /* box shadow */
+/*      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);*/
+      min-width: 20em;
+      margin: 10px;
+      animation: fadeInAnimation ease 2s
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    body {
+      margin: 0 auto;
+      width: 50%;
+    }
+
+    @keyframes fadeInAnimation {
+      0% {
+          opacity: 0;
+      }
+      100% {
+          opacity: 1;
+       }
+  }
+ 
+
+  </style>
 </head>
-<body>
-	<h1>Hello world</h1>
-    <button id="btn" onclick="ws.close();" >Close connection</button>
+<body style="position: relative">
+  <button style="position: fixed; top: 0; right: 0;" id="btn" onclick="ws.close();" >Close connection</button>
+  <div id="messages"></div>
 <script>
-  
 const ws = new WebSocket("ws://nodejs-websocket.localhost:30001/ws/");
 ws.addEventListener("open", () =>{  
   console.log(ws.url, ws.binaryType, ws.bufferedAmount, ws.protocol, ws.readyState)
@@ -29,7 +85,90 @@ ws.addEventListener('upgrade', function upgrade(request, socket, head) {
 })
 ws.addEventListener('message', function (event) {
     console.log('on.ws.message Message from server ', event.data);
-    console.log(event.data);
+    var obj = JSON.parse(event.data);
+    console.log(obj);
+    if(obj === undefined) {
+      console.log("event is undefined, for:" + obj);
+    }
+    else {
+      if(obj === "ping from server") {
+        console.log("ping from server");
+      } else if(obj !== null) {
+        console.log(obj);
+        console.log(obj["event"])
+        if(obj["event"] != undefined) {
+          var newVal = obj["oldVal"];
+          var oldVal = obj["newVal"];
+    
+          var involvedObjectNewVal = newVal["involvedObject"];
+    
+          switch(involvedObjectNewVal["kind"]) {
+            case "Pod":
+              console.log("Pod event");
+              var podEvent = {}
+              podEvent["kind"] = involvedObjectNewVal["kind"];
+              podEvent["namespace"] = involvedObjectNewVal["namespace"];
+              podEvent["name"] = involvedObjectNewVal["name"];
+              podEvent["reason"] = newVal["reason"];
+              podEvent["message"] = newVal["message"];
+              console.log(podEvent);
+
+              // Insert podEvent into the DOM
+              var messages = document.getElementById("messages");
+
+              _.templateSettings = {
+                interpolate: /\{\{(.+?)\}\}/g
+              };
+          
+        
+              var template = _.template("<div class='card'><div class='card-title'>{{kind}} </div><span>{{name}} </span><span>{{message}}</span>");
+              var result = template({kind: podEvent["kind"], message: podEvent["message"]});
+             console.log(result);
+             // Insert result into the DOM
+
+             messages.insertBefore(document.createRange().createContextualFragment(result), messages.firstChild);
+//              messages.innerHTML += result;
+
+          
+              break;
+            case "Node":
+              console.log("Node event");
+              break;
+            default:
+              console.log("default");
+          }
+  
+        }
+  
+      }
+      
+
+    }
+
+    /*
+    var messages = document.getElementById("messages");
+
+    _.templateSettings = {
+      interpolate: /\{\{(.+?)\}\}/g
+    };
+
+
+    var template = _.template("Hello {{ name }}!");
+    var result = template({name: "Mustache"});
+
+    console.log(result);
+
+    
+
+    var event = obj.event;
+    let involvedObject = JSON.parse(obj)
+    var template = _.template("<div>{{ event }}: {{ involvedObject }}</div>");
+    var result = template({event_type: obj.event, involvedObject: involvedObject.kind});
+
+    // Append result to messages
+    messages.innerHTML += result;
+
+*/ 
 });
 
 ws.addEventListener("close", () =>{

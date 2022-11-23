@@ -4,7 +4,7 @@ metadata:
   name: ingress-service
   namespace: default
   annotations:
-    nginx.org/websocket-services: "nodejs-websocket-service"
+    nginx.org/websocket-services: "k8s-event-watcher-service"
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
@@ -17,6 +17,6 @@ spec:
           path: /ws/
           backend:
             service:
-              name: nodejs-websocket-service
+              name: k8s-event-watcher-service
               port:
                 number: 8080

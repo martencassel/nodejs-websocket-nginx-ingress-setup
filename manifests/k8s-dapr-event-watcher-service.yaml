@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: nodejs-websocket-service
+  name: k8s-event-watcher-service
   namespace: default
   labels:
-    app: nodejs-websocket
+    app: k8s-event-watcher
 spec:
   type: ClusterIP
   selector:
-    app: nodejs-websocket
+    app: k8s-event-watcher
   ports:
     - name: websocket
       protocol: TCP

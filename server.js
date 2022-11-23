@@ -1,8 +1,14 @@
+const express = require('express');
+const bodyParser = require('body-parser');
 const ws = require('ws');
-const port = 8080;
+const ws_port = 8080;
+const api_port = 8081;
 const path = '/ws/';
+const app = express();
 
-const wss = new ws.Server({ port: port, path: path });
+app.use(bodyParser.json());
+
+const wss = new ws.Server({ port: ws_port, path: path });
 
 ws.onopen = function () {
     var t = setInterval(function(){
@@ -33,7 +39,7 @@ wss.on("connection", ws => {
 wss.broadcast = function broadcast(msg) {
     console.log(msg);
     wss.clients.forEach(function each(client) {
-        client.send(msg);
+        client.send(JSON.stringify(msg));
      });
  };
 
@@ -43,6 +49,14 @@ let sendMessage = (message) => {
     });
 };
 
+app.post('/kubeevents', (req, res) => {
+    console.log('hello...')
+    console.log(req.body);
+    wss.broadcast(req.body);
+    res.status(200).send()
+});
 
-console.log('WebSocket Server started on port 8080');
+
+console.log(`WebSocket Server started on port ${ws_port}`);
  
+app.listen(api_port, () => console.log(`k8s event consumer app listening on port ${api_port}!`));
